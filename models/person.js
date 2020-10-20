@@ -10,7 +10,7 @@ mongoose
   .catch((err) => console.log(`error connection ${err.message}`));
 
 const personSchema = new mongoose.Schema({
-  name: String,
+  name: { type: String, unique: true },
   number: String,
 });
 
