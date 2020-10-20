@@ -46,7 +46,7 @@ app.get("/api/persons", (req, res) => {
   });
 });
 
-app.post("/api/persons", (req, res) => {
+app.post("/api/persons", (req, res, next) => {
   const { name, number } = req.body;
   if (!name || !number) {
     return res.status(400).json({ error: "name and number are required" });
@@ -57,10 +57,13 @@ app.post("/api/persons", (req, res) => {
     number,
   });
 
-  newPerson.save().then((person) => res.json(person));
+  newPerson
+    .save()
+    .then((person) => res.json(person))
+    .catch((err) => next(err));
 });
 
-app.get("/api/persons/:id", (req, res) => {
+app.get("/api/persons/:id", (req, res, next) => {
   const id = Number(req.params.id);
   const person = persons.find((p) => p.id === id);
   if (person) {
@@ -70,16 +73,34 @@ app.get("/api/persons/:id", (req, res) => {
   }
 });
 
-app.delete("/api/persons/:id", (req, res) => {
+app.delete("/api/persons/:id", (req, res, next) => {
   const id = Number(req.params.id);
   Person.findByIdAndRemove(req.params.id)
     .then((result) => res.status(204).end())
-    .catch((err) => console.log(err));
+    .catch((err) => next(err));
 });
 
 app.get("/info", (req, res) => {
   res.send(`<p>Phonebook has info for ${persons.length} people.</p> <p>${new Date()}</p>`);
 });
+
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: "unknown endpoint" });
+};
+
+app.use(unknownEndpoint);
+
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message);
+
+  if (error.name === "CastError") {
+    return response.status(400).send({ error: "malformatted id" });
+  }
+
+  next(error);
+};
+
+app.use(errorHandler);
 
 app.use(express.static("build"));
 const port = process.env.PORT || 3001;
