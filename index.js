@@ -29,8 +29,17 @@ let persons = [
   },
 ];
 
+app.use(express.json());
+
 app.get("/api/persons", (req, res) => {
   res.json(persons);
+});
+
+app.post("/api/persons", (req, res) => {
+  const id = Math.floor(Math.random() * 99999);
+  const person = { id, ...req.body };
+  persons = persons.concat(person);
+  res.status(201).send(person);
 });
 
 app.get("/api/persons/:id", (req, res) => {
