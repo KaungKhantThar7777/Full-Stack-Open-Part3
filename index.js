@@ -74,7 +74,7 @@ app.delete("/api/persons/:id", (req, res) => {
 });
 
 app.get("/info", (req, res) => {
-  res.send(`<p>Phonebook has info for ${persons.length} people.</p><br /> <p>${new Date()}</p>`);
+  res.send(`<p>Phonebook has info for ${persons.length} people.</p> <p>${new Date()}</p>`);
 });
 
 app.use(express.static("build"));
