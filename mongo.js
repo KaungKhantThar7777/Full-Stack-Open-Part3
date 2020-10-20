@@ -9,15 +9,16 @@ const password = process.argv[2];
 
 const url = `mongodb+srv://kaung:${password}@cluster0.aogxo.mongodb.net/phone-book?retryWrites=true&w=majority`;
 
-mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true }, (err) =>
-  console.log("connected successfully", err)
-);
+mongoose
+  .connect(url, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => console.log("connected successfully"))
+  .catch((err) => console.log(`error connection ${err.message}`));
 
 const personSchema = new mongoose.Schema({
   name: String,
   number: String,
 });
-const Person = mongoose.model("Phonebook", personSchema);
+const Person = mongoose.model("Person", personSchema);
 
 if (process.argv.length === 5) {
   const name = process.argv[3];
