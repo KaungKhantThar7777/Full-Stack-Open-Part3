@@ -65,12 +65,15 @@ app.post("/api/persons", (req, res, next) => {
 
 app.get("/api/persons/:id", (req, res, next) => {
   const id = Number(req.params.id);
-  const person = persons.find((p) => p.id === id);
-  if (person) {
-    res.json(person);
-  } else {
-    res.status(404).end();
-  }
+  Person.findById(id)
+    .then((person) => {
+      if (person) {
+        res.json(person);
+      } else {
+        res.status(404).end();
+      }
+    })
+    .catch((err) => next(err));
 });
 
 app.put("/api/persons/:id", (req, res, next) => {
@@ -92,9 +95,12 @@ app.delete("/api/persons/:id", (req, res, next) => {
     .catch((err) => next(err));
 });
 
-app.get("/info", (req, res) => {
-  res.send(`<p>Phonebook has info for ${persons.length} people.</p> <p>${new Date()}</p>`);
+app.get("/info", async (req, res) => {
+  const total = await Person.find({}).then((people) => people.length);
+  res.send(`<p>Phonebook has info for ${total} people.</p> <p>${new Date()}</p>`);
 });
+
+app.use(express.static("build"));
 
 const unknownEndpoint = (request, response) => {
   response.status(404).send({ error: "unknown endpoint" });
@@ -114,6 +120,5 @@ const errorHandler = (error, request, response, next) => {
 
 app.use(errorHandler);
 
-app.use(express.static("build"));
 const port = process.env.PORT || 3001;
 app.listen(port, () => console.log(`App is listening on port ${port}`));
