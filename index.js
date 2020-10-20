@@ -83,7 +83,7 @@ app.put("/api/persons/:id", (req, res, next) => {
     name,
     number,
   };
-  Person.findByIdAndUpdate(req.params.id, updatePerson, { new: true })
+  Person.findByIdAndUpdate(req.params.id, updatePerson, { runValidators: true, new: true })
     .then((person) => res.json(person))
     .catch((err) => next(err));
 });
@@ -115,6 +115,8 @@ const errorHandler = (error, request, response, next) => {
     return response.status(400).send({ error: "malformatted id" });
   } else if (error.code === 11000) {
     return response.status(400).send({ error: "duplicated key" });
+  } else if (error.name === "ValidationError") {
+    return response.status(400).send(error);
   }
 
   next(error);
