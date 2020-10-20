@@ -72,9 +72,9 @@ app.get("/api/persons/:id", (req, res) => {
 
 app.delete("/api/persons/:id", (req, res) => {
   const id = Number(req.params.id);
-  persons = persons.filter((p) => p.id !== id);
-
-  res.status(204).end();
+  Person.findByIdAndRemove(req.params.id)
+    .then((result) => res.status(204).end())
+    .catch((err) => console.log(err));
 });
 
 app.get("/info", (req, res) => {
