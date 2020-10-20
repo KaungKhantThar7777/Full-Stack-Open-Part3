@@ -37,9 +37,17 @@ app.get("/api/persons", (req, res) => {
 
 app.post("/api/persons", (req, res) => {
   const id = Math.floor(Math.random() * 99999);
-  const person = { id, ...req.body };
+  const { name, number } = req.body;
+  if (!name || !number) {
+    return res.status(400).json({ error: "name and number are required" });
+  }
+  const isUserExist = persons.find((p) => p.name === name);
+  if (isUserExist) {
+    return res.status(400).json({ error: "name must be unique" });
+  }
+  const person = { id, name, number };
   persons = persons.concat(person);
-  res.status(201).send(person);
+  res.status(201).json(person);
 });
 
 app.get("/api/persons/:id", (req, res) => {
