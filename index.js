@@ -76,5 +76,5 @@ app.delete("/api/persons/:id", (req, res) => {
 app.get("/info", (req, res) => {
   res.send(`<p>Phonebook has info for ${persons.length} people.</p><br /> ${new Date()}`);
 });
-const port = 3001;
+const port = process.env.PORT || 3001;
 app.listen(port, () => console.log(`App is listening on port ${port}`));
